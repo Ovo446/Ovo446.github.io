@@ -1,11 +1,73 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8">
-    <title>Hello</title>
-  </head>
-  <body>
-    <h1>豆哥大哥东</h1>
-    <p>豆哥大哥东是一种内蒙古发明的黏糕，吃在嘴里的时候十分拗口，通常小孩子喜欢吃，发明豆哥大哥东的是一个叫豆豆的人</p>
-  </body>
+<head>
+  <meta charset="UTF-8">
+  <title>陈玥岩的网站 OVO</title>
+  <style>
+    body {
+      background-color: #ffffff;
+      color: #000000;
+      font-family: monospace; /* 像素风字体感 */
+      text-align: center;
+    }
+    .flower {
+      width: 30px;
+      height: 30px;
+      background-color: pink;
+      border: 2px solid #000;
+      display: inline-block;
+      margin: 5px;
+      font-size: 8px;
+    }
+    #flowerArea {
+      margin-top: 20px;
+    }
+    #addButton {
+      margin-top: 20px;
+      padding: 10px;
+      border: 2px solid #000;
+      background-color: #eee;
+      cursor: pointer;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>陈玥岩的网站 OVO</h1>
+  <p>这个界面已经有 <span id="flowerCount">3</span> 朵小花！</p>
+
+  <div id="flowerArea">
+    <!-- 这里会动态生成小花 -->
+  </div>
+
+  <div id="addButton">留下你的小花</div>
+
+  <script>
+    // 假设已有 3 朵小花
+    let flowerCount = 3;
+    const flowerArea = document.getElementById('flowerArea');
+    const flowerCountText = document.getElementById('flowerCount');
+
+    // 初始生成3朵小花
+    for (let i = 0; i < flowerCount; i++) {
+      addFlower("小花" + (i+1));
+    }
+
+    // 点击按钮新增一朵小花
+    document.getElementById('addButton').onclick = function() {
+      flowerCount++;
+      addFlower("新小花");
+      flowerCountText.textContent = flowerCount;
+    }
+
+    function addFlower(name) {
+      const flower = document.createElement('div');
+      flower.className = 'flower';
+      flower.textContent = name;
+      flowerArea.appendChild(flower);
+    }
+  </script>
+
+</body>
 </html>
