@@ -45,21 +45,16 @@
     const flowerArea = document.getElementById('flowerArea');
     const flowerCountText = document.getElementById('flowerCount');
 
-    // 初始生成3朵小花
-    for (let i = 0; i < flowerCount; i++) {
-      addFlower("小花" + (i+1));
-    }
 
     // 点击按钮新增一朵小花
     document.getElementById('addButton').onclick = function() {
       flowerCount++;
-      addFlower("新小花");
       flowerCountText.textContent = flowerCount;
     }
 
     function addFlower(name) {
       const flower = document.createElement('img');
-      flower.src = 'image/植物学家_7_陈卓_来自小红书网页版.jpg';
+      flower.src = 'images/植物学家_7_陈卓_来自小红书网页版.jpg';
       flower.alt = name
       flower.className = 'flower';
       flowerArea.appendChild(flower);
