@@ -1,65 +1,124 @@
 <!DOCTYPE html>
+<!-- 声明文档类型，告诉浏览器这是一个HTML5文件 -->
 <html>
 <head>
-  <meta charset="UTF-8">
-  <title>Cyy的网站 OVO</title>
-  <style>
-    body {
-      background-color: #ffffff;
-      color: #000000;
-      font-family: monospace; /* 像素风字体感 */
-      text-align: center;
-    }
-    .flower {
-      width: 60px
-      height: 30px;
-      margin: 5px;
-    }
-    #flowerArea {
-      margin-top: 20px;
-    }
-    #addButton {
-      margin-top: 20px;
-      padding: 10px;
-      border: 2px solid #000;
-      background-color: #eee;
-      cursor: pointer;
-      font-size: 16px;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <!-- 设置字符编码为UTF-8，支持中文显示，防止乱码 -->
+
+    <title>Cyy的花园 OVO</title>
+    <!-- 网页标签页上显示的标题 -->
+
+    <style>
+        /* CSS样式区，定义网页的外观设计 */
+
+        body {
+            background-color: #f0f0f0;  /* 设置页面背景颜色为浅灰色 */
+            font-family: 'Press Start 2P', monospace;  /* 使用像素风字体，没有就用等宽字体 */
+            text-align: center;  /* 让页面内的文字、元素居中对齐 */
+            overflow: hidden;  /* 隐藏滚动条，防止小花掉落时撑开页面 */
+        }
+
+        h1 {
+            margin-top: 50px;  /* 标题距离页面顶部50像素 */
+            font-size: 24px;   /* 设置标题字体大小 */
+        }
+
+        #addButton {
+            margin-top: 30px;        /* 按钮距离上方元素30像素 */
+            padding: 12px 20px;      /* 按钮内边距：上下12px，左右20px */
+            background-color: #dcdcdc;  /* 按钮背景颜色：浅灰 */
+            border: 3px solid #000;     /* 黑色边框，3像素宽 */
+            display: inline-block;      /* 让按钮大小自适应内容 */
+            font-size: 14px;            /* 按钮文字大小 */
+            cursor: pointer;            /* 鼠标悬停时显示小手图标 */
+        }
+
+        .flower {
+            position: absolute;     /* 绝对定位，让小花自由漂浮在页面上 */
+            width: 50px;            /* 小花宽度50像素 */
+            height: 50px;           /* 小花高度50像素 */
+            transition: transform 5s linear;  /* 平滑执行transform变换，持续5秒 */
+        }
+
+        #flowerCountText {
+            margin-top: 20px;   /* 计数文本距离上方元素20像素 */
+            display: block;     /* 独占一行显示 */
+            font-size: 14px;    /* 字体大小 */
+        }
+    </style>
+
+    <!-- 引入像素风字体库，需联网加载 -->
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 </head>
+
 <body>
+    <!-- 网页内容部分 -->
 
-  <h1>Cyy的网站 OVO</h1>
-  <p>这个界面已经有 <span id="flowerCount">3</span> 朵小花！</p>
+    <h1>Cyy的小花园 OVO</h1>
+    <!-- 页面主标题，展示在网页中央偏上位置 -->
 
-  <div id="flowerArea">
-    <!-- 这里会动态生成小花 -->
-  </div>
+    <div id="addButton">留下你的小花</div>
+    <!-- 一个可点击的按钮，点击后生成小花 -->
 
-  <div id="addButton">留下你的小花</div>
+    <span id="flowerCountText">这个界面已经有 0 朵小花！</span>
+    <!-- 显示当前页面上的小花数量 -->
 
-  <script>
-    // 假设已有 3 朵小花
-    let flowerCount = 3;
-    const flowerArea = document.getElementById('flowerArea');
-    const flowerCountText = document.getElementById('flowerCount');
+    <script>
+        // ------- JavaScript 逻辑部分：控制交互和动画 -------
 
+        const flowerImages = ["fl1.jpg", "fl2.jpg", "fl3.jpg", "fl4.jpg", "fl5.jpg", "fl6.jpg"];
+        // 定义一个数组，存放所有小花图片的文件名
 
-    // 点击按钮新增一朵小花
-    document.getElementById('addButton').onclick = function() {
-      flowerCount++;
-      flowerCountText.textContent = flowerCount;
-    }
+        let flowerCount = 0;
+        // 初始化小花数量为0
 
-    function addFlower(name) {
-      const flower = document.createElement('img');
-      flower.src = 'images/植物学家_7_陈卓_来自小红书网页版.jpg';
-      flower.alt = name
-      flower.className = 'flower';
-      flowerArea.appendChild(flower);
-    }
-  </script>
+        const addButton = document.getElementById('addButton');
+        // 获取按钮元素，方便后续绑定点击事件
+
+        const countText = document.getElementById('flowerCountText');
+        // 获取显示小花数量的文本元素
+
+        addButton.onclick = function() {
+            // 定义点击按钮后的操作
+
+            flowerCount++;  
+            // 每点击一次，小花数量+1
+
+            const flower = document.createElement('img');
+            // 创建一个新的<img>标签，用来显示小花图片
+
+            flower.src = `flowers/${randomFlower()}`;
+            // 随机选一张小花图片，设置图片路径
+
+            flower.className = 'flower';
+            // 给图片加上定义好的CSS样式类，方便控制样式和动画
+
+            flower.style.left = Math.random() * (window.innerWidth - 50) + 'px';
+            // 随机设置小花的水平初始位置（页面宽度内随机）
+
+            flower.style.top = '-60px';
+            // 小花初始位置在页面顶部之外，制造“从天而降”的效果
+
+            document.body.appendChild(flower);
+            // 把这个小花元素插入到页面中，用户可见
+
+            setTimeout(() => {
+                flower.style.transform = `translateY(${window.innerHeight - 100}px)`;
+            }, 50);
+            // 触发下落动画：让小花平滑下降到接近页面底部的位置
+
+            countText.textContent = `这个界面已经有 ${flowerCount} 朵小花！`;
+            // 更新显示的小花数量
+        };
+
+        function randomFlower() {
+            // 定义一个函数，返回随机的一张小花图片名
+            const index = Math.floor(Math.random() * flowerImages.length);
+            // 生成一个0到图片数量之间的随机整数
+            return flowerImages[index];
+            // 返回对应的图片文件名
+        }
+    </script>
 
 </body>
 </html>
