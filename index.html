@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>陈玥岩的网站 OVO</title>
+  <title>Cyy的网站 OVO</title>
   <style>
     body {
       background-color: #ffffff;
@@ -11,13 +11,9 @@
       text-align: center;
     }
     .flower {
-      width: 30px;
+      width: 60px
       height: 30px;
-      background-color: pink;
-      border: 2px solid #000;
-      display: inline-block;
       margin: 5px;
-      font-size: 8px;
     }
     #flowerArea {
       margin-top: 20px;
@@ -34,7 +30,7 @@
 </head>
 <body>
 
-  <h1>陈玥岩的网站 OVO</h1>
+  <h1>Cyy的网站 OVO</h1>
   <p>这个界面已经有 <span id="flowerCount">3</span> 朵小花！</p>
 
   <div id="flowerArea">
@@ -62,9 +58,10 @@
     }
 
     function addFlower(name) {
-      const flower = document.createElement('div');
+      const flower = document.createElement('img');
+      flower.src = 'image/植物学家_7_陈卓_来自小红书网页版.jpg';
+      flower.alt = name
       flower.className = 'flower';
-      flower.textContent = name;
       flowerArea.appendChild(flower);
     }
   </script>
