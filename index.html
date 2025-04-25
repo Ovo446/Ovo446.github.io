@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <!-- 设置字符编码为UTF-8，支持中文显示，防止乱码 -->
 
-    <title>Cyy的花园 OVO</title>
+    <title>Cyy‘s Garden ovo</title>
     <!-- 网页标签页上显示的标题 -->
 
     <style>
@@ -54,13 +54,13 @@
 <body>
     <!-- 网页内容部分 -->
 
-    <h1>Cyy的小花园 OVO</h1>
+    <h1>Cyy’s Garden</h1>
     <!-- 页面主标题，展示在网页中央偏上位置 -->
 
-    <div id="addButton">留下你的小花</div>
+    <div id="addButton">Leave your Flower</div>
     <!-- 一个可点击的按钮，点击后生成小花 -->
 
-    <span id="flowerCountText">这个界面已经有 0 朵小花！</span>
+    <span id="flowerCountText">There are X flowers here！</span>
     <!-- 显示当前页面上的小花数量 -->
 
     <script>
@@ -87,7 +87,7 @@
             const flower = document.createElement('img');
             // 创建一个新的<img>标签，用来显示小花图片
 
-            flower.src = `flowers/${randomFlower()}`;
+            flower.src = `flower/${randomFlower()}`;
             // 随机选一张小花图片，设置图片路径
 
             flower.className = 'flower';
@@ -107,7 +107,7 @@
             }, 50);
             // 触发下落动画：让小花平滑下降到接近页面底部的位置
 
-            countText.textContent = `这个界面已经有 ${flowerCount} 朵小花！`;
+            countText.textContent = `There are ${flowerCount} flowers here！`;
             // 更新显示的小花数量
         };
 
