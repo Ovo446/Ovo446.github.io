@@ -1,1 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ClassicSpark</title>
+  <style>
+    body {
+      font-family: 'Georgia', serif;
+      text-align: center;
+      padding: 20px;
+      background-color: #f5fff4;
+    }
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      justify-content: center;
+      background-color: #a8d5ba;
+      padding: 10px;
+      border-radius: 8px;
+    }
+    .logo {
+      font-size: 2rem;
+    }
+    .quote-box {
+      margin-top: 30px;
+      background-color: #fff8f0;
+      padding: 20px;
+      border: 2px solid #ffd6a5;
+      border-radius: 10px;
+    }
+    button {
+      background-color: #a8d5ba;
+      color: black;
+      border: 2px solid #ffd6a5;
+      border-radius: 6px;
+      padding: 8px 12px;
+      cursor: pointer;
+      margin-top: 15px;
+    }
+    button:hover {
+      background-color: #c1e8c7;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <span class="logo">🍊</span>
+    <h1>ClassicSpark</h1>
+  </div>
+  <div class="quote-box" id="quoteBox">
+    <h2 id="quoteText">Loading...</h2>
+    <p><em id="quoteSource"></em></p >
+    <p id="quoteTranslation"></p >
+    <button onclick="speakQuote()">🔊 Listen</button><br/>
+    <button id="markBtn" onclick="markToday()">🍊 Mark as studied today</button>
+    <p id="markedMsg" style="display:none;">🍊 Already marked for today! Come back tomorrow!</p >
+  </div>
 
+  <script>
+    const quotes = [
+      {
+        text: "It is a truth universally acknowledged, that a single man in possession of a good fortune, must be in want of a wife.",
+        translation: "It is widely accepted that a wealthy single man must be seeking a wife.",
+        source: "Pride and Prejudice"
+      },
+      {
+        text: "I declare after all there is no enjoyment like reading!",
+        translation: "Honestly, nothing is as enjoyable as reading!",
+        source: "Pride and Prejudice"
+      }
+    ];
+
+    const quote = quotes[Math.floor(Math.random() * quotes.length)];
+    document.getElementById("quoteText").textContent = quote.text;
+    document.getElementById("quoteTranslation").textContent = quote.translation;
+    document.getElementById("quoteSource").textContent = quote.source;
+
+    function speakQuote() {
+      const utter = new SpeechSynthesisUtterance(quote.text);
+      speechSynthesis.speak(utter);
+    }
+
+    function markToday() {
+      const today = new Date().toDateString();
+      localStorage.setItem("classicSparkLastDate", today);
+      document.getElementById("markBtn").style.display = "none";
+      document.getElementById("markedMsg").style.display = "block";
+    }
+
+    const stored = localStorage.getItem("classicSparkLastDate");
+    if (stored === new Date().toDateString()) {
+      document.getElementById("markBtn").style.display = "none";
+      document.getElementById("markedMsg").style.display = "block";
+    }
+  </script>
+</body>
+</html>
