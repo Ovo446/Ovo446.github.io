@@ -1,129 +1,116 @@
 <!DOCTYPE html>
-<!-- 声明文档类型，告诉浏览器这是一个HTML5文件 -->
 <html>
 <head>
-    <meta charset="UTF-8">
-    <!-- 设置字符编码为UTF-8，支持中文显示，防止乱码 -->
-
-    <title>Cyy‘s page ovo</title>
-    <!-- 网页标签页上显示的标题 -->
-
-    <style>
-        /* CSS样式区，定义网页的外观设计 */
-
-        body {
-            background-image: url('flower/pg1.jpg');  /* 背景图路径：flower 文件夹里的 pg1.jpg */
-            background-size: cover;        /* 背景铺满整个页面 */
-            background-position: center;   /* 居中显示 */
-            background-repeat: no-repeat;  /* 不重复 */
-            color: #000000；                 /* 改成白色字体，避免看不清 */
-            text-align: center;
-            font-family: 'Press Start 2P', monospace;  /* 使用像素风字体，没有就用等宽字体 */
-            text-align: center;  /* 让页面内的文字、元素居中对齐 */
-            overflow: hidden;  /* 隐藏滚动条，防止小花掉落时撑开页面 */
-        }
-
-        h1 {
-            margin-top: 50px;  /* 标题距离页面顶部50像素 */
-            font-size: 24px;   /* 设置标题字体大小 */
-        }
-
-        #addButton {
-            margin-top: 30px;        /* 按钮距离上方元素30像素 */
-            padding: 12px 20px;      /* 按钮内边距：上下12px，左右20px */
-            background-color: #dcdcdc;  /* 按钮背景颜色：浅灰 */
-            border: 3px solid #000;     /* 黑色边框，3像素宽 */
-            display: inline-block;      /* 让按钮大小自适应内容 */
-            font-size: 14px;            /* 按钮文字大小 */
-            cursor: pointer;            /* 鼠标悬停时显示小手图标 */
-        }
-
-        .flower {
-            position: absolute;     /* 绝对定位，让小花自由漂浮在页面上 */
-            width: 50px;            /* 小花宽度50像素 */
-            height: 50px;           /* 小花高度50像素 */
-            transition: transform 5s linear;  /* 平滑执行transform变换，持续5秒 */
-        }
-
-        #flowerCountText {
-            margin-top: 20px;   /* 计数文本距离上方元素20像素 */
-            display: block;     /* 独占一行显示 */
-            font-size: 14px;    /* 字体大小 */
-        }
-    </style>
-
-    <!-- 引入像素风字体库，需联网加载 -->
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <title>English Learning Site</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 2em;
+      background: #f9f9f9;
+      color: #333;
+    }
+    h1, h2 {
+      text-align: center;
+    }
+    nav {
+      text-align: center;
+      margin-bottom: 2em;
+    }
+    .button {
+      background-color: #a8dfc2;
+      color: #000;
+      padding: 10px 20px;
+      text-decoration: none;
+      margin: 0 10px;
+      border-radius: 6px;
+      font-weight: bold;
+    }
+    .card {
+      background: white;
+      padding: 1em;
+      margin: 1em auto;
+      border-radius: 8px;
+      box-shadow: 0 0 8px rgba(0,0,0,0.1);
+      max-width: 600px;
+    }
+    .hidden { display: none; }
+  </style>
 </head>
-
 <body>
-    <!-- 网页内容部分 -->
 
-    <h1>Cyy’s page</h1>
-    <!-- 页面主标题，展示在网页中央偏上位置 -->
+  <h1>Welcome to the English Learning Site</h1>
+  <nav>
+    <a class="button" href="#" onclick="showPage('home')">Home</a>
+    <a class="button" href="#" onclick="showPage('daily')">Daily Read</a>
+    <a class="button" href="#" onclick="showPage('about')">About</a>
+  </nav>
 
-    <div id="addButton">Leave your cat</div>
-    <!-- 一个可点击的按钮，点击后生成小花 -->
+  <!-- Home Page -->
+  <div id="home">
+    <p style="text-align:center;">Choose a section above to start learning!</p>
+  </div>
 
-    <span id="flowerCountText">There are 0 cats here！</span>
-    <!-- 显示当前页面上的小花数量 -->
+  <!-- Daily Read Page -->
+  <div id="daily" class="hidden">
+    <h2>Daily TED Talks</h2>
+    <div id="talks-container"></div>
+  </div>
 
-    <script>
-        // ------- JavaScript 逻辑部分：控制交互和动画 -------
+  <!-- About Page -->
+  <div id="about" class="hidden">
+    <h2>About This Site</h2>
+    <p>This is a student project built to display daily English learning content using TED talks as example material. It runs entirely in your browser, with no backend needed.</p>
+  </div>
 
-        const flowerImages = ["cat'.html"];
-        // 定义一个数组，存放所有小花图片的文件名
+  <script>
+    const tedTalks = [
+      {
+        title: "How AI could empower any business",
+        speaker: "Andrew Ng",
+        duration: "12:24",
+        url: "https://www.ted.com/talks/andrew_ng_how_ai_could_empower_any_business"
+      },
+      {
+        title: "The power of vulnerability",
+        speaker: "Brené Brown",
+        duration: "20:04",
+        url: "https://www.ted.com/talks/brene_brown_the_power_of_vulnerability"
+      },
+      {
+        title: "Inside the mind of a master procrastinator",
+        speaker: "Tim Urban",
+        duration: "14:03",
+        url: "https://www.ted.com/talks/tim_urban_inside_the_mind_of_a_master_procrastinator"
+      }
+    ];
 
-        let flowerCount = 0;
-        // 初始化小花数量为0
+    function showPage(pageId) {
+      document.getElementById("home").classList.add("hidden");
+      document.getElementById("daily").classList.add("hidden");
+      document.getElementById("about").classList.add("hidden");
+      document.getElementById(pageId).classList.remove("hidden");
 
-        const addButton = document.getElementById('addButton');
-        // 获取按钮元素，方便后续绑定点击事件
+      if (pageId === "daily") {
+        const container = document.getElementById("talks-container");
+        container.innerHTML = "";
+        tedTalks.forEach(talk => {
+          const card = document.createElement('div');
+          card.className = 'card';
+          card.innerHTML = `
+            <h2>${talk.title}</h2>
+            <p><strong>Speaker:</strong> ${talk.speaker}</p>
+            <p><strong>Duration:</strong> ${talk.duration}</p>
+            <a href="${talk.url}" target="_blank">Watch Talk</a>
+          `;
+          container.appendChild(card);
+        });
+      }
+    }
 
-        const countText = document.getElementById('flowerCountText');
-        // 获取显示小花数量的文本元素
-
-        addButton.onclick = function() {
-            // 定义点击按钮后的操作
-
-            flowerCount++;  
-            // 每点击一次，小花数量+1
-
-            const flower = document.createElement('img');
-            // 创建一个新的<img>标签，用来显示小花图片
-
-            flower.src = `flower/${randomFlower()}`;
-            // 随机选一张小花图片，设置图片路径
-
-            flower.className = 'flower';
-            // 给图片加上定义好的CSS样式类，方便控制样式和动画
-
-            flower.style.left = Math.random() * (window.innerWidth - 50) + 'px';
-            // 随机设置小花的水平初始位置（页面宽度内随机）
-
-            flower.style.top = '-60px';
-            // 小花初始位置在页面顶部之外，制造“从天而降”的效果
-
-            document.body.appendChild(flower);
-            // 把这个小花元素插入到页面中，用户可见
-
-            setTimeout(() => {
-                flower.style.transform = `translateY(${window.innerHeight - 100}px)`;
-            }, 50);
-            // 触发下落动画：让小花平滑下降到接近页面底部的位置
-
-            countText.textContent = `There are ${flowerCount} flowers here！`;
-            // 更新显示的小花数量
-        };
-
-        function randomFlower() {
-            // 定义一个函数，返回随机的一张小花图片名
-            const index = Math.floor(Math.random() * flowerImages.length);
-            // 生成一个0到图片数量之间的随机整数
-            return flowerImages[index];
-            // 返回对应的图片文件名
-        }
-    </script>
+    // 默认显示首页
+    showPage('home');
+  </script>
 
 </body>
 </html>
