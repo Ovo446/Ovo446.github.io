@@ -2,42 +2,31 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>ClassicSpark</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     body {
-      font-family: 'Georgia', serif;
-      text-align: center;
-      padding: 20px;
+      font-family: Georgia, serif;
       background-color: #f5fff4;
-    }
-    .header {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      justify-content: center;
-      background-color: #a8d5ba;
-      padding: 10px;
-      border-radius: 8px;
+      text-align: center;
+      padding: 50px;
     }
     .logo {
-      font-size: 2rem;
+      font-size: 3rem;
     }
-    .quote-box {
-      margin-top: 30px;
-      background-color: #fff8f0;
-      padding: 20px;
-      border: 2px solid #ffd6a5;
-      border-radius: 10px;
+    h1 {
+      color: #444;
     }
     button {
       background-color: #a8d5ba;
       color: black;
       border: 2px solid #ffd6a5;
-      border-radius: 6px;
-      padding: 8px 12px;
+      border-radius: 8px;
+      padding: 15px 30px;
+      font-size: 1.2rem;
       cursor: pointer;
-      margin-top: 15px;
+      margin-top: 30px;
+      transition: 0.2s;
     }
     button:hover {
       background-color: #c1e8c7;
@@ -45,54 +34,19 @@
   </style>
 </head>
 <body>
-  <div class="header">
-    <span class="logo">🍊</span>
-    <h1>ClassicSpark</h1>
-  </div>
-  <div class="quote-box" id="quoteBox">
-    <h2 id="quoteText">Loading...</h2>
-    <p><em id="quoteSource"></em></p >
-    <p id="quoteTranslation"></p >
-    <button onclick="speakQuote()">🔊 Listen</button><br/>
-    <button id="markBtn" onclick="markToday()">🍊 Mark as studied today</button>
-    <p id="markedMsg" style="display:none;">🍊 Already marked for today! Come back tomorrow!</p >
-  </div>
+  <div class="logo">🍊</div>
+  <h1>Welcome to ClassicSpark</h1>
+  <p>Your daily dose of classic English literature with interactive vocabulary.</p>
+  <button onclick="goToLearn()">Start Learning</button>
+
+  <audio id="clickSound" src="click.mp3" preload="auto"></audio>
 
   <script>
-    const quotes = [
-      {
-        text: "It is a truth universally acknowledged, that a single man in possession of a good fortune, must be in want of a wife.",
-        translation: "It is widely accepted that a wealthy single man must be seeking a wife.",
-        source: "Pride and Prejudice"
-      },
-      {
-        text: "I declare after all there is no enjoyment like reading!",
-        translation: "Honestly, nothing is as enjoyable as reading!",
-        source: "Pride and Prejudice"
-      }
-    ];
-
-    const quote = quotes[Math.floor(Math.random() * quotes.length)];
-    document.getElementById("quoteText").textContent = quote.text;
-    document.getElementById("quoteTranslation").textContent = quote.translation;
-    document.getElementById("quoteSource").textContent = quote.source;
-
-    function speakQuote() {
-      const utter = new SpeechSynthesisUtterance(quote.text);
-      speechSynthesis.speak(utter);
-    }
-
-    function markToday() {
-      const today = new Date().toDateString();
-      localStorage.setItem("classicSparkLastDate", today);
-      document.getElementById("markBtn").style.display = "none";
-      document.getElementById("markedMsg").style.display = "block";
-    }
-
-    const stored = localStorage.getItem("classicSparkLastDate");
-    if (stored === new Date().toDateString()) {
-      document.getElementById("markBtn").style.display = "none";
-      document.getElementById("markedMsg").style.display = "block";
+    function goToLearn() {
+      document.getElementById('clickSound').play();
+      setTimeout(() => {
+        window.location.href = "learn.html";
+      }, 150);
     }
   </script>
 </body>
