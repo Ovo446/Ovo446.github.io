@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Daily Quote - ClassicSpark</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      font-family: Georgia, serif;
+      background-color: #fff8f0;
+      text-align: center;
+      padding: 20px;
+    }
+    .header {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      background-color: #a8d5ba;
+      padding: 10px;
+      border-radius: 8px;
+    }
+    .logo {
+      font-size: 2rem;
+    }
+    .quote-box {
+      margin-top: 30px;
+      background-color: white;
+      padding: 20px;
+      border: 2px solid #ffd6a5;
+      border-radius: 10px;
+    }
+    .word {
+      color: #007700;
+      cursor: pointer;
+      text-decoration: underline dashed;
+    }
+    #definitionBox {
+      background-color: #eee;
+      border: 1px solid #ccc;
+      margin-top: 15px;
+      padding: 10px;
+      display: none;
+    }
+    button {
+      background-color: #a8d5ba;
+      border: 2px solid #ffd6a5;
+      border-radius: 6px;
+      padding: 8px 12px;
+      cursor: pointer;
+      margin-top: 15px;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <span class="logo">🍊</span>
+    <h2>ClassicSpark: Daily Quote</h2>
+  </div>
+
+  <div class="quote-box">
+    <p id="quoteText">It is a <span class="word" onclick="showDef('truth')">truth</span> universally acknowledged, that a <span class="word" onclick="showDef('fortune')">fortune</span> must be in want of a <span class="word" onclick="showDef('wife')">wife</span>.</p >
+    <button onclick="speak()">🔊 Listen</button>
+    <button onclick="mark()">🍊 Mark as Today</button>
+    <p id="statusMsg"></p >
+    <div id="definitionBox"></div>
+  </div>
+
+  <audio id="clickSound" src="click.mp3" preload="auto"></audio>
+
+  <script>
+    const definitions = {
+      "truth": "Truth: a fact or belief that is accepted as true.",
+      "fortune": "Fortune: a large amount of money or assets.",
+      "wife": "Wife: a married woman considered in relation to her spouse."
+    };
+
+    function speak() {
+      const utter = new SpeechSynthesisUtterance(document.getElementById("quoteText").innerText);
+      speechSynthesis.speak(utter);
+    }
+
+    function showDef(word) {
+      const box = document.getElementById("definitionBox");
+      box.textContent = definitions[word];
+      box.style.display = 'block';
+      document.getElementById("clickSound").play();
+    }
+
+    function mark() {
+      const today = new Date().toDateString();
+      localStorage.setItem("classicSparkV2_last", today);
+      document.getElementById("statusMsg").textContent = "Marked for today!";
+    }
+
+    const stored = localStorage.getItem("classicSparkV2_last");
+    if (stored === new Date().toDateString()) {
+      document.getElementById("statusMsg").textContent = "🍊 Already marked today!";
+    }
+  </script>
+</body>
+</html>
