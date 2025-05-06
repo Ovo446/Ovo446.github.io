@@ -1,262 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>ClassicSpark V4</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    body {
-      font-family: Georgia, serif;
-      background-color: #f5fff4;
-      margin: 0;
-      padding: 0;
-    }
-    .header {
-      background-color: #a8d5ba;
-      color: #333;
-      padding: 15px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: 1.4rem;
-    }
-    .logo {
-      font-size: 2rem;
-      margin-right: 10px;
-    }
-    .nav {
-      text-align: center;
-      margin: 20px;
-    }
-    .nav button {
-      margin: 0 10px;
-      padding: 10px 20px;
-      border: 2px solid #ffd6a5;
-      background-color: #a8d5ba;
-      cursor: pointer;
-      border-radius: 8px;
-    }
-    .nav button:hover {
-      background-color: #c1e8c7;
-    }
-    .section {
-      display: none;
-      padding: 20px;
-      text-align: center;
-    }
-    .active {
-      display: block;
-    }
-    .word {
-      color: #007700;
-      text-decoration: underline dotted;
-      cursor: pointer;
-    }
-    .card {
-      background-color: #fff8f0;
-      border: 1px solid #ffd6a5;
-      border-radius: 8px;
-      padding: 15px;
-      margin-top: 15px;
-      display: none;
-    }
-    .textarea {
-      width: 90%;
-      height: 60px;
-      margin-top: 10px;
-      font-family: Georgia, serif;
-    }
-    #wordbookList {
-      margin-top: 20px;
-    }
-    .word-item {
-      padding: 5px 10px;
-      border-bottom: 1px solid #ccc;
-    }
-  </style>
+  <meta charset="UTF-8" />
+  <title>ClassicSpark</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="header">
-    <span class="logo">🍊</span> ClassicSpark V4
-  </div>
+  <header>
+    <h1>🍊 ClassicSpark</h1>
+    <nav>
+      <button onclick="switchPage('home')">Daily Sentence</button>
+      <button onclick="switchPage('notes')">Notes</button>
+      <button onclick="switchPage('stats')">Progress</button>
+    </nav>
+  </header>
 
-  <div class="nav">
-    <button onclick="switchSection('home')">Home</button>
-    <button onclick="switchSection('learn')">Daily Quote</button>
-    <button onclick="switchSection('wordbook')">My Wordbook</button>
-  </div>
+  <main>
+    <section id="home" class="page active">
+      <h2>Today's Sentence</h2>
+      <p id="sentenceDisplay"></p>
+      <div id="wordCard" class="card hidden"></div>
+    </section>
 
-  <div id="home" class="section active">
-    <h2>Welcome to ClassicSpark</h2>
-    <p>Study practical English phrases. Click on words to learn more.</p >
-    <button onclick="switchSection('learn'); clickSound.play()">Start Learning</button>
-  </div>
+    <section id="notes" class="page">
+      <h2>Notes</h2>
+      <textarea id="noteArea" placeholder="Write down words or phrases you want to remember..."></textarea>
+    </section>
 
-  <div id="learn" class="section">
-    <h3>Today's Sentence</h3>
-    <p id="quoteText">Loading...</p >
-    <button onclick="speakQuote()">🔊 Listen</button>
-    <button onclick="mark()">🍊 Mark Today</button>
-    <p id="statusMsg"></p >
+    <section id="stats" class="page">
+      <h2>Daily Progress</h2>
+      <p id="streak">You've studied for <span id="days">0</span> consecutive days!</p>
+    </section>
+  </main>
 
-    <div id="card" class="card">
-      <h4 id="cardWord"></h4>
-      <p><b>IPA:</b> <span id="cardIPA"></span></p >
-      <p><b>Definition:</b> <span id="cardEn"></span></p >
-      <p><b>Chinese:</b> <span id="cardCn"></span></p >
-      <p><b>Example:</b> <span id="cardEx"></span></p >
-      <button onclick="addToWordbook()">Add to Wordbook</button>
-      <div>
-        <textarea id="note" class="textarea" placeholder="Write your note here..."></textarea>
-      </div>
-    </div>
-  </div>
-
-  <div id="wordbook" class="section">
-    <h3>My Wordbook</h3>
-    <div id="wordbookList"></div>
-  </div>
-
-  <audio id="clickSound" src="ui-soft-click.mp3" preload="auto"></audio>
-
-  <script>
-  const quotes = [
-  "I need to charge my phone.",
-  "Can you help me carry this?",
-  "Let's take a break.",
-  "I totally forgot!",
-  "Don't worry about it.",
-  "I'm just looking around.",
-  "What do you recommend?",
-  "I'll have the same, please.",
-  "This place is amazing!",
-  "Thanks for your help."
-];
-
-const dictionary = {
-  charge: {
-    ipa: "/tʃɑːrdʒ/",
-    en: "to put electricity into a device",
-    cn: "充电",
-    ex: "I need to charge my phone before going out."
-  },
-  phone: {
-    ipa: "/foʊn/",
-    en: "a mobile device used for communication",
-    cn: "手机",
-    ex: "Her phone rang during the meeting."
-  },
-  carry: {
-    ipa: "/ˈkæri/",
-    en: "to hold and move something",
-    cn: "搬运，携带",
-    ex: "Can you help me carry this bag?"
-  },
-  break: {
-    ipa: "/breɪk/",
-    en: "a short period of rest",
-    cn: "休息",
-    ex: "Let's take a break and get coffee."
-  },
-  forgot: {
-    ipa: "/fərˈɡɑːt/",
-    en: "failed to remember",
-    cn: "忘记",
-    ex: "I forgot my homework at home."
-  },
-  recommend: {
-    ipa: "/ˌrekəˈmend/",
-    en: "to suggest something as good",
-    cn: "推荐",
-    ex: "What do you recommend on the menu?"
-  },
-  amazing: {
-    ipa: "/əˈmeɪzɪŋ/",
-    en: "very good or impressive",
-    cn: "惊人的，棒极了",
-    ex: "This place is amazing!"
-  }
-};
-
-let currentWord = "";
-
-function switchSection(id) {
-  clickSound.play();
-  document.querySelectorAll(".section").forEach(el => el.classList.remove("active"));
-  document.getElementById(id).classList.add("active");
-  if (id === "wordbook") renderWordbook();
-}
-
-function speakQuote() {
-  const text = document.getElementById("quoteText").innerText;
-  const utter = new SpeechSynthesisUtterance(text);
-  speechSynthesis.speak(utter);
-}
-
-function highlightWords(sentence) {
-  const words = sentence.split(" ");
-  return words.map(word => {
-    const clean = word.toLowerCase().replace(/[^a-z]/gi, "");
-    return dictionary[clean]
-      ? `<span class="word" onclick="showCard('${clean}')">${word}</span>`
-      : word;
-  }).join(" ");
-}
-
-function loadQuote() {
-  const sentence = quotes[Math.floor(Math.random() * quotes.length)];
-  document.getElementById("quoteText").innerHTML = highlightWords(sentence);
-}
-
-function showCard(word) {
-  currentWord = word;
-  const data = dictionary[word];
-  document.getElementById("cardWord").innerText = word;
-  document.getElementById("cardIPA").innerText = data.ipa;
-  document.getElementById("cardEn").innerText = data.en;
-  document.getElementById("cardCn").innerText = data.cn;
-  document.getElementById("cardEx").innerText = data.ex;
-  document.getElementById("note").value = localStorage.getItem("note_" + word) || "";
-  document.getElementById("card").style.display = "block";
-  clickSound.play();
-}
-
-function addToWordbook() {
-  const stored = JSON.parse(localStorage.getItem("wordbook") || "[]");
-  if (!stored.includes(currentWord)) {
-    stored.push(currentWord);
-    localStorage.setItem("wordbook", JSON.stringify(stored));
-  }
-  localStorage.setItem("note_" + currentWord, document.getElementById("note").value);
-  alert("Saved!");
-}
-
-function renderWordbook() {
-  const list = document.getElementById("wordbookList");
-  list.innerHTML = "";
-  const stored = JSON.parse(localStorage.getItem("wordbook") || "[]");
-  stored.forEach(word => {
-    const data = dictionary[word] || {};
-    const item = document.createElement("div");
-    item.className = "word-item";
-    item.innerHTML = `<b>${word}</b> (${data.ipa || ""}): ${data.en || ""}
-    <br><em>CN:</em> ${data.cn || ""}<br><em>Note:</em> ${localStorage.getItem("note_" + word) || ""}`;
-    list.appendChild(item);
-  });
-}
-
-function mark() {
-  const today = new Date().toDateString();
-  localStorage.setItem("classicSparkV4_last", today);
-  document.getElementById("statusMsg").textContent = "🍊 Marked for today!";
-}
-
-const stored = localStorage.getItem("classicSparkV4_last");
-if (stored === new Date().toDateString()) {
-  document.getElementById("statusMsg").textContent = "🍊 Already marked today!";
-}
-
-window.onload = loadQuote;
-</script>
+  <audio id="clickSound" src="assets/click.mp3" preload="auto"></audio>
+  <script src="script.js"></script>
 </body>
 </html>
