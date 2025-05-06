@@ -2,10 +2,10 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>ClassicSpark</title>
+  <title>🍊 ClassicSpark</title>
   <style>
     body {
-      font-family: "Arial", sans-serif;
+      font-family: "Georgia", serif;
       margin: 0;
       background: #f7fff8;
       color: #333;
@@ -15,6 +15,9 @@
       padding: 1em;
       text-align: center;
       border-bottom: 3px solid #ffd8a8;
+    }
+    nav {
+      margin-top: 10px;
     }
     nav button {
       margin: 0 10px;
@@ -54,73 +57,69 @@
       background: #fff9db;
       resize: none;
     }
+    .article-meta {
+      font-style: italic;
+      color: #777;
+      margin-bottom: 10px;
+    }
+    #readButton {
+      background: #a5d8ff;
+      border: 2px solid #339af0;
+      color: #000;
+      padding: 0.5em 1em;
+      cursor: pointer;
+      margin-top: 10px;
+    }
   </style>
 </head>
 <body>
   <header>
     <h1>🍊 ClassicSpark</h1>
     <nav>
-      <button onclick="switchPage('home')">Daily Sentence</button>
+      <button onclick="switchPage('article')">Today's Article</button>
       <button onclick="switchPage('notes')">Notes</button>
-      <button onclick="switchPage('stats')">Progress</button>
     </nav>
   </header>
 
   <main>
-    <section id="home" class="page active">
-      <h2>Today's Sentence</h2>
-      <p id="sentenceDisplay"></p>
-      <div id="wordCard" class="card hidden"></div>
+    <section id="article" class="page active">
+      <h2>Today’s Article</h2>
+      <div class="article-meta" id="meta"></div>
+      <p id="articleText"></p >
+      <button id="readButton" onclick="readAloud()">Read Aloud</button>
     </section>
 
     <section id="notes" class="page">
       <h2>Notes</h2>
       <textarea id="noteArea" placeholder="Write down words or phrases you want to remember..."></textarea>
     </section>
-
-    <section id="stats" class="page">
-      <h2>Daily Progress</h2>
-      <p id="streak">You've studied for <span id="days">0</span> consecutive days!</p>
-    </section>
   </main>
 
   <audio id="clickSound" src="assets/click.mp3" preload="auto"></audio>
 
   <script>
-    let sentenceData = [
-      "The best way to get started is to quit talking and begin doing.",
-      "Success is not final, failure is not fatal: It is the courage to continue that counts.",
-      "In the middle of every difficulty lies opportunity.",
-      "Education is the most powerful weapon which you can use to change the world."
-    ];
-
-    let wordData = {
-      "success": {
-        "pron": "/səkˈses/",
-        "pos": "noun",
-        "definition": "the achievement of a desired aim or result",
-        "example": "Success is not final, failure is not fatal."
+    const articles = [
+      {
+        text: "It is a truth universally acknowledged, that a single man in possession of a good fortune, must be in want of a wife.",
+        author: "Jane Austen",
+        source: "Pride and Prejudice"
       },
-      "opportunity": {
-        "pron": "/ˌɑːpərˈtuːnəti/",
-        "pos": "noun",
-        "definition": "a time or set of circumstances that makes it possible to do something",
-        "example": "In the middle of every difficulty lies opportunity."
+      {
+        text: "All animals are equal, but some animals are more equal than others.",
+        author: "George Orwell",
+        source: "Animal Farm"
       },
-      "courage": {
-        "pron": "/ˈkɜːrɪdʒ/",
-        "pos": "noun",
-        "definition": "the ability to do something that frightens one; bravery",
-        "example": "It is the courage to continue that counts."
+      {
+        text: "It was the best of times, it was the worst of times...",
+        author: "Charles Dickens",
+        source: "A Tale of Two Cities"
+      },
+      {
+        text: "So we beat on, boats against the current, borne back ceaselessly into the past.",
+        author: "F. Scott Fitzgerald",
+        source: "The Great Gatsby"
       }
-    };
-
-    let streak = parseInt(localStorage.getItem('streak') || '0');
-
-    window.onload = function () {
-      renderSentence();
-      updateStreak();
-    };
+    ];
 
     function switchPage(pageId) {
       document.getElementById("clickSound").play();
@@ -128,43 +127,20 @@
       document.getElementById(pageId).classList.add("active");
     }
 
-    function renderSentence() {
-      const sentence = sentenceData[Math.floor(Math.random() * sentenceData.length)];
-      const words = sentence.split(" ").map(w => `<span onclick="showWordCard('${w.replace(/[^\w]/g, "")}')">${w}</span>`);
-      document.getElementById("sentenceDisplay").innerHTML = words.join(" ");
+    function loadRandomArticle() {
+      const chosen = articles[Math.floor(Math.random() * articles.length)];
+      document.getElementById("articleText").textContent = chosen.text;
+      document.getElementById("meta").textContent = `${chosen.author} — ${chosen.source}`;
     }
 
-    function showWordCard(word) {
-      const info = wordData[word.toLowerCase()];
-      if (!info) return alert("Word card not found.");
-      const card = document.getElementById("wordCard");
-      card.innerHTML = `
-        <h3>${word}</h3>
-        <p><strong>Pronunciation:</strong> ${info.pron}</p>
-        <p><strong>Part of speech:</strong> ${info.pos}</p>
-        <p><strong>Definition:</strong> ${info.definition}</p>
-        <p><strong>Example:</strong> ${info.example}</p>
-        <button onclick="addToFavorites('${word}')">Add to favorites</button>
-      `;
-      card.classList.remove("hidden");
+    function readAloud() {
+      const text = document.getElementById("articleText").textContent;
+      const utterance = new SpeechSynthesisUtterance(text);
+      speechSynthesis.cancel(); // stop any current speaking
+      speechSynthesis.speak(utterance);
     }
 
-    function addToFavorites(word) {
-      let fav = JSON.parse(localStorage.getItem("favorites") || "[]");
-      if (!fav.includes(word)) fav.push(word);
-      localStorage.setItem("favorites", JSON.stringify(fav));
-      alert("Added to favorites!");
-    }
-
-    function updateStreak() {
-      const today = new Date().toDateString();
-      if (localStorage.getItem("lastDay") !== today) {
-        streak++;
-        localStorage.setItem("lastDay", today);
-        localStorage.setItem("streak", streak.toString());
-      }
-      document.getElementById("days").textContent = streak;
-    }
+    window.onload = loadRandomArticle;
   </script>
 </body>
 </html>
