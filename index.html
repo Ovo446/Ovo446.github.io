@@ -3,7 +3,58 @@
 <head>
   <meta charset="UTF-8" />
   <title>ClassicSpark</title>
-  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      font-family: "Arial", sans-serif;
+      margin: 0;
+      background: #f7fff8;
+      color: #333;
+    }
+    header {
+      background: #b2f2bb;
+      padding: 1em;
+      text-align: center;
+      border-bottom: 3px solid #ffd8a8;
+    }
+    nav button {
+      margin: 0 10px;
+      padding: 0.5em 1em;
+      background: #ffec99;
+      border: 2px solid #ffa94d;
+      cursor: pointer;
+      transition: transform 0.1s ease;
+    }
+    nav button:hover {
+      transform: scale(1.05);
+    }
+    main {
+      padding: 2em;
+    }
+    .page {
+      display: none;
+    }
+    .page.active {
+      display: block;
+    }
+    .card {
+      border: 2px solid #ffa94d;
+      padding: 1em;
+      background: #fff3bf;
+      margin-top: 1em;
+      border-radius: 8px;
+    }
+    .hidden {
+      display: none;
+    }
+    textarea {
+      width: 100%;
+      height: 150px;
+      padding: 1em;
+      border: 2px solid #ffa94d;
+      background: #fff9db;
+      resize: none;
+    }
+  </style>
 </head>
 <body>
   <header>
@@ -34,6 +85,86 @@
   </main>
 
   <audio id="clickSound" src="assets/click.mp3" preload="auto"></audio>
-  <script src="script.js"></script>
+
+  <script>
+    let sentenceData = [
+      "The best way to get started is to quit talking and begin doing.",
+      "Success is not final, failure is not fatal: It is the courage to continue that counts.",
+      "In the middle of every difficulty lies opportunity.",
+      "Education is the most powerful weapon which you can use to change the world."
+    ];
+
+    let wordData = {
+      "success": {
+        "pron": "/səkˈses/",
+        "pos": "noun",
+        "definition": "the achievement of a desired aim or result",
+        "example": "Success is not final, failure is not fatal."
+      },
+      "opportunity": {
+        "pron": "/ˌɑːpərˈtuːnəti/",
+        "pos": "noun",
+        "definition": "a time or set of circumstances that makes it possible to do something",
+        "example": "In the middle of every difficulty lies opportunity."
+      },
+      "courage": {
+        "pron": "/ˈkɜːrɪdʒ/",
+        "pos": "noun",
+        "definition": "the ability to do something that frightens one; bravery",
+        "example": "It is the courage to continue that counts."
+      }
+    };
+
+    let streak = parseInt(localStorage.getItem('streak') || '0');
+
+    window.onload = function () {
+      renderSentence();
+      updateStreak();
+    };
+
+    function switchPage(pageId) {
+      document.getElementById("clickSound").play();
+      document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+      document.getElementById(pageId).classList.add("active");
+    }
+
+    function renderSentence() {
+      const sentence = sentenceData[Math.floor(Math.random() * sentenceData.length)];
+      const words = sentence.split(" ").map(w => `<span onclick="showWordCard('${w.replace(/[^\w]/g, "")}')">${w}</span>`);
+      document.getElementById("sentenceDisplay").innerHTML = words.join(" ");
+    }
+
+    function showWordCard(word) {
+      const info = wordData[word.toLowerCase()];
+      if (!info) return alert("Word card not found.");
+      const card = document.getElementById("wordCard");
+      card.innerHTML = `
+        <h3>${word}</h3>
+        <p><strong>Pronunciation:</strong> ${info.pron}</p>
+        <p><strong>Part of speech:</strong> ${info.pos}</p>
+        <p><strong>Definition:</strong> ${info.definition}</p>
+        <p><strong>Example:</strong> ${info.example}</p>
+        <button onclick="addToFavorites('${word}')">Add to favorites</button>
+      `;
+      card.classList.remove("hidden");
+    }
+
+    function addToFavorites(word) {
+      let fav = JSON.parse(localStorage.getItem("favorites") || "[]");
+      if (!fav.includes(word)) fav.push(word);
+      localStorage.setItem("favorites", JSON.stringify(fav));
+      alert("Added to favorites!");
+    }
+
+    function updateStreak() {
+      const today = new Date().toDateString();
+      if (localStorage.getItem("lastDay") !== today) {
+        streak++;
+        localStorage.setItem("lastDay", today);
+        localStorage.setItem("streak", streak.toString());
+      }
+      document.getElementById("days").textContent = streak;
+    }
+  </script>
 </body>
 </html>
