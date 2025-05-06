@@ -1,0 +1,20 @@
+{
+  "success": {
+    "pron": "/səkˈses/",
+    "pos": "noun",
+    "definition": "the achievement of a desired aim or result",
+    "example": "Success is not final, failure is not fatal."
+  },
+  "opportunity": {
+    "pron": "/ˌɑːpərˈtuːnəti/",
+    "pos": "noun",
+    "definition": "a time or set of circumstances that makes it possible to do something",
+    "example": "In the middle of every difficulty lies opportunity."
+  },
+  "courage": {
+    "pron": "/ˈkɜːrɪdʒ/",
+    "pos": "noun",
+    "definition": "the ability to do something that frightens one; bravery",
+    "example": "It is the courage to continue that counts."
+  }
+}
