@@ -2,13 +2,14 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>🍊 ClassicSpark</title>
+  <title>🍊 ClassicSpark V3.0</title>
   <style>
     body {
       font-family: "Georgia", serif;
       margin: 0;
       background: #f7fff8;
       color: #333;
+      overflow-x: hidden;
     }
     header {
       background: #b2f2bb;
@@ -25,37 +26,12 @@
       background: #ffec99;
       border: 2px solid #ffa94d;
       cursor: pointer;
-      transition: transform 0.1s ease;
     }
     nav button:hover {
       transform: scale(1.05);
     }
     main {
       padding: 2em;
-    }
-    .page {
-      display: none;
-    }
-    .page.active {
-      display: block;
-    }
-    .card {
-      border: 2px solid #ffa94d;
-      padding: 1em;
-      background: #fff3bf;
-      margin-top: 1em;
-      border-radius: 8px;
-    }
-    .hidden {
-      display: none;
-    }
-    textarea {
-      width: 100%;
-      height: 150px;
-      padding: 1em;
-      border: 2px solid #ffa94d;
-      background: #fff9db;
-      resize: none;
     }
     .article-meta {
       font-style: italic;
@@ -69,6 +45,31 @@
       padding: 0.5em 1em;
       cursor: pointer;
       margin-top: 10px;
+    }
+    .word {
+      cursor: pointer;
+      color: #1864ab;
+    }
+    .tooltip {
+      position: absolute;
+      background: #fff3bf;
+      border: 1px solid #ffa94d;
+      padding: 10px;
+      border-radius: 5px;
+      display: none;
+      z-index: 100;
+      max-width: 250px;
+    }
+    #mascot {
+      position: fixed;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80px;
+      height: 80px;
+      background: url('https://em-content.zobj.net/source/animated-noto-color-emoji/356/nerd-face_1f913.gif') no-repeat center center;
+      background-size: contain;
+      pointer-events: none;
     }
   </style>
 </head>
@@ -89,28 +90,24 @@
       <button id="readButton" onclick="readAloud()">Read Aloud</button>
     </section>
 
-    <section id="notes" class="page">
+    <section id="notes" class="page" style="display: none;">
       <h2>Notes</h2>
       <textarea id="noteArea" placeholder="Write down words or phrases you want to remember..."></textarea>
     </section>
   </main>
 
-  <audio id="clickSound" src="assets/click.mp3" preload="auto"></audio>
+  <div id="mascot"></div>
+  <div id="tooltip" class="tooltip"></div>
 
   <script>
     const articles = [
-      {
-        text: "It is a truth universally acknowledged, that a single man in possession of a good fortune, must be in want of a wife.",
-        author: "Jane Austen",
-        source: "Pride and Prejudice"
-      },
       {
         text: "All animals are equal, but some animals are more equal than others.",
         author: "George Orwell",
         source: "Animal Farm"
       },
       {
-        text: "It was the best of times, it was the worst of times...",
+        text: "It was the best of times, it was the worst of times, it was the age of wisdom, it was the age of foolishness...",
         author: "Charles Dickens",
         source: "A Tale of Two Cities"
       },
@@ -118,29 +115,79 @@
         text: "So we beat on, boats against the current, borne back ceaselessly into the past.",
         author: "F. Scott Fitzgerald",
         source: "The Great Gatsby"
+      },
+      {
+        text: "It is a truth universally acknowledged, that a single man in possession of a good fortune, must be in want of a wife.",
+        author: "Jane Austen",
+        source: "Pride and Prejudice"
       }
     ];
 
-    function switchPage(pageId) {
-      document.getElementById("clickSound").play();
-      document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
-      document.getElementById(pageId).classList.add("active");
+    const dictionary = {
+      animals: {
+        definition: "Living organisms that feed on organic matter.",
+        example: "Farm animals include cows, pigs, and chickens."
+      },
+      foolishness: {
+        definition: "Lack of good sense or judgment.",
+        example: "His foolishness got him into trouble."
+      },
+      acknowledged: {
+        definition: "Recognized or accepted as being true.",
+        example: "She acknowledged her mistake openly."
+      },
+      boats: {
+        definition: "Small vessels used for traveling on water.",
+        example: "The boats floated gently on the lake."
+      },
+      fortune: {
+        definition: "A large amount of wealth or luck.",
+        example: "He inherited a great fortune from his uncle."
+      }
+    };
+
+    function switchPage(id) {
+      document.querySelectorAll("section").forEach(sec => sec.style.display = "none");
+      document.getElementById(id).style.display = "block";
     }
 
-    function loadRandomArticle() {
+    function loadArticle() {
       const chosen = articles[Math.floor(Math.random() * articles.length)];
-      document.getElementById("articleText").textContent = chosen.text;
+      const words = chosen.text.split(" ").map(word => {
+        const clean = word.replace(/[^\w]/g, '').toLowerCase();
+        return `<span class="word" onmouseover="showTooltip(event, '${clean}')" onmouseout="hideTooltip()">${word}</span>`;
+      });
+      document.getElementById("articleText").innerHTML = words.join(" ");
       document.getElementById("meta").textContent = `${chosen.author} — ${chosen.source}`;
     }
 
     function readAloud() {
-      const text = document.getElementById("articleText").textContent;
+      const text = document.getElementById("articleText").innerText;
       const utterance = new SpeechSynthesisUtterance(text);
-      speechSynthesis.cancel(); // stop any current speaking
+      speechSynthesis.cancel();
       speechSynthesis.speak(utterance);
     }
 
-    window.onload = loadRandomArticle;
+    function showTooltip(e, word) {
+      if (!dictionary[word]) return;
+      const tip = document.getElementById("tooltip");
+      tip.innerHTML = `<strong>${word}</strong><br><em>${dictionary[word].definition}</em><br><small>${dictionary[word].example}</small>`;
+      tip.style.left = e.pageX + 10 + "px";
+      tip.style.top = e.pageY + 10 + "px";
+      tip.style.display = "block";
+    }
+
+    function hideTooltip() {
+      document.getElementById("tooltip").style.display = "none";
+    }
+
+    window.onload = () => {
+      loadArticle();
+      document.addEventListener("mousemove", e => {
+        const mascot = document.getElementById("mascot");
+        mascot.style.left = (e.pageX - 40) + "px";
+      });
+    };
   </script>
 </body>
 </html>
