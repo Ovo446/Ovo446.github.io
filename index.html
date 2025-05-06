@@ -2,20 +2,24 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>🍊 ClassicSpark V3.0</title>
+  <title>🍊 ClassicSpark V4.0</title>
   <style>
     body {
-      font-family: "Georgia", serif;
       margin: 0;
-      background: #f7fff8;
+      font-family: "Georgia", serif;
+      background: url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1920&q=80') no-repeat center center fixed;
+      background-size: cover;
       color: #333;
-      overflow-x: hidden;
     }
     header {
-      background: #b2f2bb;
+      backdrop-filter: blur(8px);
+      background-color: rgba(255, 255, 255, 0.5);
       padding: 1em;
       text-align: center;
-      border-bottom: 3px solid #ffd8a8;
+      border-bottom: 2px solid #ffa94d;
+    }
+    h1 {
+      margin: 0;
     }
     nav {
       margin-top: 10px;
@@ -23,53 +27,68 @@
     nav button {
       margin: 0 10px;
       padding: 0.5em 1em;
-      background: #ffec99;
+      background: #fff3bf;
       border: 2px solid #ffa94d;
+      border-radius: 8px;
       cursor: pointer;
-    }
-    nav button:hover {
-      transform: scale(1.05);
+      font-size: 16px;
     }
     main {
       padding: 2em;
+      max-width: 700px;
+      margin: auto;
+      background-color: rgba(255, 255, 255, 0.75);
+      border-radius: 12px;
+      margin-top: 30px;
     }
-    .article-meta {
+    #meta {
       font-style: italic;
-      color: #777;
+      color: #555;
       margin-bottom: 10px;
     }
+    #articleText span {
+      cursor: pointer;
+      color: #1c7ed6;
+    }
     #readButton {
-      background: #a5d8ff;
-      border: 2px solid #339af0;
-      color: #000;
-      padding: 0.5em 1em;
+      margin-top: 15px;
+      padding: 0.4em 1em;
+      background: #d0ebff;
+      border: 1px solid #339af0;
+      border-radius: 8px;
       cursor: pointer;
-      margin-top: 10px;
     }
-    .word {
-      cursor: pointer;
-      color: #1864ab;
-    }
-    .tooltip {
+    #tooltip {
       position: absolute;
-      background: #fff3bf;
-      border: 1px solid #ffa94d;
-      padding: 10px;
-      border-radius: 5px;
       display: none;
-      z-index: 100;
+      background: #fff3bf;
+      border: 1px solid #fab005;
+      padding: 10px;
+      border-radius: 6px;
       max-width: 250px;
+      z-index: 999;
+      font-size: 14px;
     }
     #mascot {
       position: fixed;
       bottom: 10px;
-      left: 50%;
-      transform: translateX(-50%);
+      right: 10px;
       width: 80px;
       height: 80px;
-      background: url('https://em-content.zobj.net/source/animated-noto-color-emoji/356/nerd-face_1f913.gif') no-repeat center center;
+      background: url('https://em-content.zobj.net/source/animated-noto-color-emoji/356/smiling-face-with-smiling-eyes_1f60a.gif') no-repeat center center;
       background-size: contain;
-      pointer-events: none;
+      transition: transform 0.3s ease;
+    }
+    #micButton {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #e7f5ff;
+      border: 2px solid #74c0fc;
+      padding: 10px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 18px;
     }
   </style>
 </head>
@@ -77,37 +96,24 @@
   <header>
     <h1>🍊 ClassicSpark</h1>
     <nav>
-      <button onclick="switchPage('article')">Today's Article</button>
-      <button onclick="switchPage('notes')">Notes</button>
+      <button onclick="loadArticle()">New Article</button>
     </nav>
   </header>
 
   <main>
-    <section id="article" class="page active">
-      <h2>Today’s Article</h2>
-      <div class="article-meta" id="meta"></div>
-      <p id="articleText"></p >
-      <button id="readButton" onclick="readAloud()">Read Aloud</button>
-    </section>
-
-    <section id="notes" class="page" style="display: none;">
-      <h2>Notes</h2>
-      <textarea id="noteArea" placeholder="Write down words or phrases you want to remember..."></textarea>
-    </section>
+    <div id="meta"></div>
+    <p id="articleText"></p >
+    <button id="readButton" onclick="readAloud()">Read Aloud</button>
   </main>
 
+  <div id="tooltip"></div>
   <div id="mascot"></div>
-  <div id="tooltip" class="tooltip"></div>
+  <button id="micButton" onclick="startSpeech()">🎤</button>
 
   <script>
     const articles = [
       {
-        text: "All animals are equal, but some animals are more equal than others.",
-        author: "George Orwell",
-        source: "Animal Farm"
-      },
-      {
-        text: "It was the best of times, it was the worst of times, it was the age of wisdom, it was the age of foolishness...",
+        text: "It was the best of times, it was the worst of times.",
         author: "Charles Dickens",
         source: "A Tale of Two Cities"
       },
@@ -117,48 +123,43 @@
         source: "The Great Gatsby"
       },
       {
-        text: "It is a truth universally acknowledged, that a single man in possession of a good fortune, must be in want of a wife.",
-        author: "Jane Austen",
-        source: "Pride and Prejudice"
+        text: "All animals are equal, but some animals are more equal than others.",
+        author: "George Orwell",
+        source: "Animal Farm"
       }
     ];
 
     const dictionary = {
-      animals: {
-        definition: "Living organisms that feed on organic matter.",
-        example: "Farm animals include cows, pigs, and chickens."
+      best: {
+        def: "Of the highest quality, excellence.",
+        example: "She gave her best performance."
       },
-      foolishness: {
-        definition: "Lack of good sense or judgment.",
-        example: "His foolishness got him into trouble."
-      },
-      acknowledged: {
-        definition: "Recognized or accepted as being true.",
-        example: "She acknowledged her mistake openly."
+      worst: {
+        def: "Of the lowest quality or most severe.",
+        example: "It was the worst storm of the year."
       },
       boats: {
-        definition: "Small vessels used for traveling on water.",
-        example: "The boats floated gently on the lake."
+        def: "Small vessels for traveling on water.",
+        example: "Fishing boats lined the shore."
       },
-      fortune: {
-        definition: "A large amount of wealth or luck.",
-        example: "He inherited a great fortune from his uncle."
+      equal: {
+        def: "Being the same in quantity or value.",
+        example: "We treat all people as equal."
+      },
+      past: {
+        def: "A time before the present.",
+        example: "He often thought about the past."
       }
     };
 
-    function switchPage(id) {
-      document.querySelectorAll("section").forEach(sec => sec.style.display = "none");
-      document.getElementById(id).style.display = "block";
-    }
-
     function loadArticle() {
-      const chosen = articles[Math.floor(Math.random() * articles.length)];
-      const words = chosen.text.split(" ").map(word => {
-        const clean = word.replace(/[^\w]/g, '').toLowerCase();
-        return `<span class="word" onmouseover="showTooltip(event, '${clean}')" onmouseout="hideTooltip()">${word}</span>`;
+      const a = articles[Math.floor(Math.random() * articles.length)];
+      const words = a.text.split(" ").map(word => {
+        const clean = word.toLowerCase().replace(/[^\w]/g, '');
+        return `<span onmouseenter="showTooltip(event, '${clean}')" onmouseleave="hideTooltip()">${word}</span>`;
       });
       document.getElementById("articleText").innerHTML = words.join(" ");
-      document.getElementById("meta").textContent = `${chosen.author} — ${chosen.source}`;
+      document.getElementById("meta").textContent = `${a.author} — ${a.source}`;
     }
 
     function readAloud() {
@@ -171,7 +172,7 @@
     function showTooltip(e, word) {
       if (!dictionary[word]) return;
       const tip = document.getElementById("tooltip");
-      tip.innerHTML = `<strong>${word}</strong><br><em>${dictionary[word].definition}</em><br><small>${dictionary[word].example}</small>`;
+      tip.innerHTML = `<strong>${word}</strong><br>${dictionary[word].def}<br><em>${dictionary[word].example}</em>`;
       tip.style.left = e.pageX + 10 + "px";
       tip.style.top = e.pageY + 10 + "px";
       tip.style.display = "block";
@@ -181,13 +182,34 @@
       document.getElementById("tooltip").style.display = "none";
     }
 
-    window.onload = () => {
-      loadArticle();
-      document.addEventListener("mousemove", e => {
-        const mascot = document.getElementById("mascot");
-        mascot.style.left = (e.pageX - 40) + "px";
-      });
-    };
+    const mascot = document.getElementById("mascot");
+    document.addEventListener("mousemove", e => {
+      const eyeX = e.clientX;
+      const centerX = window.innerWidth - 50;
+      const diff = eyeX - centerX;
+      mascot.style.transform = `translateX(${diff / 20}px)`;
+    });
+
+    function startSpeech() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        alert("Speech recognition not supported.");
+        return;
+      }
+      const recognition = new SpeechRecognition();
+      recognition.lang = "en-US";
+      recognition.start();
+      recognition.onresult = event => {
+        const spoken = event.results[0][0].transcript.toLowerCase().trim();
+        const original = document.getElementById("articleText").innerText.toLowerCase().trim();
+        if (spoken && original && spoken.includes(original.slice(0, 5))) {
+          mascot.style.transform = "scale(1.4)";
+          setTimeout(() => mascot.style.transform = "scale(1)", 1000);
+        }
+      };
+    }
+
+    window.onload = loadArticle;
   </script>
 </body>
 </html>
