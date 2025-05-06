@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>🍊 ClassicSpark V4.0</title>
+  <title>ClassicSpark V6.1</title>
   <style>
     body {
       margin: 0;
@@ -11,52 +11,45 @@
       background-size: cover;
       color: #333;
     }
-    header {
+    .glass {
+      background: rgba(255, 255, 255, 0.75);
       backdrop-filter: blur(8px);
-      background-color: rgba(255, 255, 255, 0.5);
-      padding: 1em;
-      text-align: center;
-      border-bottom: 2px solid #ffa94d;
+      border-radius: 12px;
+      padding: 2em;
+      margin: 2em auto;
+      max-width: 800px;
     }
     h1 {
-      margin: 0;
+      text-align: center;
+      font-size: 2.5em;
     }
     nav {
-      margin-top: 10px;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 1em;
     }
     nav button {
-      margin: 0 10px;
-      padding: 0.5em 1em;
+      padding: 0.7em 1.5em;
+      font-size: 1em;
       background: #fff3bf;
-      border: 2px solid #ffa94d;
+      border: 2px solid #fab005;
       border-radius: 8px;
       cursor: pointer;
-      font-size: 16px;
     }
-    main {
-      padding: 2em;
-      max-width: 700px;
-      margin: auto;
-      background-color: rgba(255, 255, 255, 0.75);
-      border-radius: 12px;
-      margin-top: 30px;
+    nav button:hover {
+      background: #ffe066;
     }
-    #meta {
-      font-style: italic;
-      color: #555;
-      margin-bottom: 10px;
+    .section {
+      display: none;
+    }
+    .active {
+      display: block;
     }
     #articleText span {
       cursor: pointer;
       color: #1c7ed6;
-    }
-    #readButton {
-      margin-top: 15px;
-      padding: 0.4em 1em;
-      background: #d0ebff;
-      border: 1px solid #339af0;
-      border-radius: 8px;
-      cursor: pointer;
     }
     #tooltip {
       position: absolute;
@@ -72,12 +65,19 @@
     #mascot {
       position: fixed;
       bottom: 10px;
-      right: 10px;
-      width: 80px;
-      height: 80px;
-      background: url('https://em-content.zobj.net/source/animated-noto-color-emoji/356/smiling-face-with-smiling-eyes_1f60a.gif') no-repeat center center;
+      left: 10px;
+      width: 64px;
+      height: 64px;
+      background: url('https://i.imgur.com/6o5VYwY.png') no-repeat center center;
       background-size: contain;
       transition: transform 0.3s ease;
+    }
+    .eye {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background: #000;
+      border-radius: 50%;
     }
     #micButton {
       position: fixed;
@@ -90,110 +90,202 @@
       cursor: pointer;
       font-size: 18px;
     }
+    #vocabList div {
+      margin-bottom: 1em;
+      padding: 1em;
+      border: 1px solid #dee2e6;
+      border-radius: 6px;
+      background: #fff;
+    }
+    #vocabList strong {
+      display: block;
+      font-size: 1.2em;
+    }
+    #calendar {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 5px;
+      margin-top: 1em;
+    }
+    .day {
+      width: 40px;
+      height: 40px;
+      background: #f1f3f5;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9em;
+    }
+    .today {
+      border: 2px solid #339af0;
+    }
+    .checked {
+      background: #a5d8ff;
+    }
   </style>
 </head>
 <body>
-  <header>
+  <div class="glass" id="home">
     <h1>🍊 ClassicSpark</h1>
     <nav>
-      <button onclick="loadArticle()">New Article</button>
+      <button onclick="switchPage('vocab')">Study Vocab</button>
+      <button onclick="switchPage('grammar')">Study Grammar</button>
+      <button onclick="switchPage('classics')">Read Classics</button>
+      <button onclick="switchPage('news')">Explore News</button>
+      <button onclick="switchPage('myvocab')">🧠 My Vocab</button>
+      <button onclick="switchPage('progress')">📆 Progress</button>
     </nav>
-  </header>
+  </div>
 
-  <main>
-    <div id="meta"></div>
-    <p id="articleText"></p >
-    <button id="readButton" onclick="readAloud()">Read Aloud</button>
-  </main>
+  <div class="glass section" id="vocab"><h2>Vocabulary</h2><p>Coming soon.</p ></div>
+  <div class="glass section" id="grammar"><h2>Grammar</h2><p>Coming soon.</p ></div>
+  <div class="glass section" id="classics"><h2>Classics</h2><div id="meta"></div><p id="articleText"></p ></div>
+  <div class="glass section" id="news"><h2>News</h2><p>Coming soon.</p ></div>
+  <div class="glass section" id="myvocab"><h2>My Vocabulary</h2><div id="vocabList"></div></div>
+  <div class="glass section" id="progress"><h2>📆 Progress Tracker</h2><div id="calendar"></div></div>
 
   <div id="tooltip"></div>
-  <div id="mascot"></div>
+  <div id="mascot"><div class="eye" id="eye"></div></div>
   <button id="micButton" onclick="startSpeech()">🎤</button>
 
   <script>
-    const articles = [
-      {
-        text: "It was the best of times, it was the worst of times.",
-        author: "Charles Dickens",
-        source: "A Tale of Two Cities"
-      },
-      {
-        text: "So we beat on, boats against the current, borne back ceaselessly into the past.",
-        author: "F. Scott Fitzgerald",
-        source: "The Great Gatsby"
-      },
-      {
-        text: "All animals are equal, but some animals are more equal than others.",
-        author: "George Orwell",
-        source: "Animal Farm"
-      }
-    ];
+    const sections = document.querySelectorAll(".section");
+    const textContainer = document.getElementById("articleText");
+    const vocabList = document.getElementById("vocabList");
+    const calendar = document.getElementById("calendar");
+    const meta = document.getElementById("meta");
+    const tooltip = document.getElementById("tooltip");
+    const mascot = document.getElementById("mascot");
+    const eye = document.getElementById("eye");
 
     const dictionary = {
-      best: {
-        def: "Of the highest quality, excellence.",
-        example: "She gave her best performance."
-      },
-      worst: {
-        def: "Of the lowest quality or most severe.",
-        example: "It was the worst storm of the year."
-      },
-      boats: {
-        def: "Small vessels for traveling on water.",
-        example: "Fishing boats lined the shore."
-      },
-      equal: {
-        def: "Being the same in quantity or value.",
-        example: "We treat all people as equal."
-      },
-      past: {
-        def: "A time before the present.",
-        example: "He often thought about the past."
-      }
+      best: { def: "Of the highest quality.", example: "She gave her best effort." },
+      worst: { def: "Of the lowest quality.", example: "That was the worst movie ever." },
+      fortune: { def: "A large amount of wealth.", example: "He inherited a great fortune." },
+      equal: { def: "Being the same in quantity or value.", example: "All people are born equal." },
+      animals: { def: "Living organisms that feed on organic matter.", example: "Cows and pigs are farm animals." }
     };
 
-    function loadArticle() {
-      const a = articles[Math.floor(Math.random() * articles.length)];
-      const words = a.text.split(" ").map(word => {
-        const clean = word.toLowerCase().replace(/[^\w]/g, '');
-        return `<span onmouseenter="showTooltip(event, '${clean}')" onmouseleave="hideTooltip()">${word}</span>`;
-      });
-      document.getElementById("articleText").innerHTML = words.join(" ");
-      document.getElementById("meta").textContent = `${a.author} — ${a.source}`;
+    const classic = {
+      text: "All animals are equal, but some animals are more equal than others.",
+      author: "George Orwell",
+      source: "Animal Farm"
+    };
+
+    function switchPage(id) {
+      sections.forEach(sec => sec.classList.remove("active"));
+      document.getElementById(id).classList.add("active");
+      if (id === 'classics') loadClassic();
+      if (id === 'myvocab') loadVocabList();
+      if (id === 'progress') renderCalendar();
     }
 
-    function readAloud() {
-      const text = document.getElementById("articleText").innerText;
-      const utterance = new SpeechSynthesisUtterance(text);
-      speechSynthesis.cancel();
-      speechSynthesis.speak(utterance);
+    function loadClassic() {
+      const raw = classic.text.split(" ").map(word => {
+        const clean = word.toLowerCase().replace(/[^\w]/g, '');
+        return `<span onclick="showTooltip(event, '${clean}')">${word}</span>`;
+      }).join(" ");
+      textContainer.innerHTML = raw;
+      meta.innerHTML = `<em>${classic.author} — ${classic.source}</em>`;
+      recordToday();
     }
 
     function showTooltip(e, word) {
       if (!dictionary[word]) return;
-      const tip = document.getElementById("tooltip");
-      tip.innerHTML = `<strong>${word}</strong><br>${dictionary[word].def}<br><em>${dictionary[word].example}</em>`;
-      tip.style.left = e.pageX + 10 + "px";
-      tip.style.top = e.pageY + 10 + "px";
-      tip.style.display = "block";
+      tooltip.innerHTML = `
+        <strong>${word}</strong><br>
+        ${dictionary[word].def}<br>
+        <em>${dictionary[word].example}</em><br>
+        <button onclick="saveWord('${word}')">⭐ Add to My Vocab</button>
+      `;
+      tooltip.style.left = e.pageX + 10 + "px";
+      tooltip.style.top = e.pageY + 10 + "px";
+      tooltip.style.display = "block";
     }
 
-    function hideTooltip() {
-      document.getElementById("tooltip").style.display = "none";
+    document.addEventListener("click", () => tooltip.style.display = "none");
+
+    function saveWord(word) {
+      const stored = JSON.parse(localStorage.getItem("vocab") || "{}");
+      if (!stored[word]) stored[word] = dictionary[word];
+      localStorage.setItem("vocab", JSON.stringify(stored));
+      alert(`${word} saved!`);
     }
 
-    const mascot = document.getElementById("mascot");
+    function loadVocabList() {
+      const stored = JSON.parse(localStorage.getItem("vocab") || "{}");
+      vocabList.innerHTML = "";
+      Object.keys(stored).forEach(word => {
+        const entry = stored[word];
+        const card = document.createElement("div");
+        card.innerHTML = `
+          <strong>${word}</strong>
+          <div>${entry.def}</div>
+          <em>${entry.example}</em><br>
+          <button onclick="removeWord('${word}')">❌ Remove</button>
+        `;
+        vocabList.appendChild(card);
+      });
+    }
+
+    function removeWord(word) {
+      const stored = JSON.parse(localStorage.getItem("vocab") || "{}");
+      delete stored[word];
+      localStorage.setItem("vocab", JSON.stringify(stored));
+      loadVocabList();
+    }
+
+    function recordToday() {
+      const today = new Date().toISOString().slice(0, 10);
+      const logs = JSON.parse(localStorage.getItem("studyLogs") || "[]");
+      if (!logs.includes(today)) {
+        logs.push(today);
+        localStorage.setItem("studyLogs", JSON.stringify(logs));
+      }
+    }
+
+    function renderCalendar() {
+      const logs = JSON.parse(localStorage.getItem("studyLogs") || "[]");
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = now.getMonth();
+      const first = new Date(year, month, 1).getDay();
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+      calendar.innerHTML = "";
+
+      for (let i = 0; i < first; i++) {
+        const pad = document.createElement("div");
+        calendar.appendChild(pad);
+      }
+
+      for (let d = 1; d <= daysInMonth; d++) {
+        const box = document.createElement("div");
+        const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+        box.className = "day";
+        if (dateStr === new Date().toISOString().slice(0, 10)) box.classList.add("today");
+        if (logs.includes(dateStr)) box.classList.add("checked");
+        box.textContent = d;
+        calendar.appendChild(box);
+      }
+    }
+
     document.addEventListener("mousemove", e => {
-      const eyeX = e.clientX;
-      const centerX = window.innerWidth - 50;
-      const diff = eyeX - centerX;
-      mascot.style.transform = `translateX(${diff / 20}px)`;
+      const rect = mascot.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+      const dx = e.clientX - centerX;
+      const dy = e.clientY - centerY;
+      const angle = Math.atan2(dy, dx);
+      const radius = 10;
+      eye.style.left = 30 + Math.cos(angle) * radius + "px";
+      eye.style.top = 25 + Math.sin(angle) * radius + "px";
     });
 
     function startSpeech() {
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
       if (!SpeechRecognition) {
-        alert("Speech recognition not supported.");
+        alert("Speech Recognition not supported.");
         return;
       }
       const recognition = new SpeechRecognition();
@@ -201,15 +293,46 @@
       recognition.start();
       recognition.onresult = event => {
         const spoken = event.results[0][0].transcript.toLowerCase().trim();
-        const original = document.getElementById("articleText").innerText.toLowerCase().trim();
-        if (spoken && original && spoken.includes(original.slice(0, 5))) {
-          mascot.style.transform = "scale(1.4)";
+        const original = textContainer.innerText.toLowerCase().trim();
+        const sim = similarity(spoken, original);
+        if (sim > 0.7) {
+          mascot.style.transform = "scale(1.4) rotate(10deg)";
           setTimeout(() => mascot.style.transform = "scale(1)", 1000);
         }
       };
     }
 
-    window.onload = loadArticle;
+    function similarity(a, b) {
+      const longer = a.length > b.length ? a : b;
+      const shorter = a.length > b.length ? b : a;
+      const longerLength = longer.length;
+      if (longerLength === 0) return 1.0;
+      return (longerLength - editDistance(longer, shorter)) / parseFloat(longerLength);
+    }
+
+    function editDistance(s1, s2) {
+      s1 = s1.toLowerCase();
+      s2 = s2.toLowerCase();
+      const costs = [];
+      for (let i = 0; i <= s1.length; i++) {
+        let lastValue = i;
+        for (let j = 0; j <= s2.length; j++) {
+          if (i === 0) costs[j] = j;
+          else {
+            if (j > 0) {
+              let newValue = costs[j - 1];
+              if (s1.charAt(i - 1) !== s2.charAt(j - 1)) newValue = Math.min(Math.min(newValue, lastValue), costs[j]) + 1;
+              costs[j - 1] = lastValue;
+              lastValue = newValue;
+            }
+          }
+        }
+        if (i > 0) costs[s2.length] = lastValue;
+      }
+      return costs[s2.length];
+    }
+
+    switchPage('classics');
   </script>
 </body>
 </html>
