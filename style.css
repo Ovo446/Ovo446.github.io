@@ -1,0 +1,59 @@
+body {
+  font-family: "Arial", sans-serif;
+  margin: 0;
+  background: #f7fff8;
+  color: #333;
+}
+
+header {
+  background: #b2f2bb;
+  padding: 1em;
+  text-align: center;
+  border-bottom: 3px solid #ffd8a8;
+}
+
+nav button {
+  margin: 0 10px;
+  padding: 0.5em 1em;
+  background: #ffec99;
+  border: 2px solid #ffa94d;
+  cursor: pointer;
+  transition: transform 0.1s ease;
+}
+
+nav button:hover {
+  transform: scale(1.05);
+}
+
+main {
+  padding: 2em;
+}
+
+.page {
+  display: none;
+}
+
+.page.active {
+  display: block;
+}
+
+.card {
+  border: 2px solid #ffa94d;
+  padding: 1em;
+  background: #fff3bf;
+  margin-top: 1em;
+  border-radius: 8px;
+}
+
+.hidden {
+  display: none;
+}
+
+textarea {
+  width: 100%;
+  height: 150px;
+  padding: 1em;
+  border: 2px solid #ffa94d;
+  background: #fff9db;
+  resize: none;
+}
